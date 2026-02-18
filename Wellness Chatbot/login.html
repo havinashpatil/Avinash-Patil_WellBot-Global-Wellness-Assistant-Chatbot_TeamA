@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>WellBot | Login</title>
+  <link rel="stylesheet" href="register.css">
+  <style>
+    .right h2 {
+      color: #7b8fc7 !important;
+      background: none !important;
+      -webkit-text-fill-color: unset !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Left Section -->
+    <div class="left">
+      <h1>🌿 WellBot</h1>
+      <p>Your personal wellness companion</p>
+
+      <ul>
+        <li>✔ Mental wellness support</li>
+        <li>✔ Daily healthy habits</li>
+        <li>✔ Stress & mood tracking</li>
+      </ul>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right">
+      <h2>Login</h2>
+
+      <input id="loginEmail" type="email" placeholder="Email Address">
+      <input id="loginPassword" type="password" placeholder="Password">
+
+      <button id="loginSubmitBtn">Login</button>
+
+      <div class="separator">
+        <hr> <span>OR</span>
+        <hr>
+      </div>
+
+      <button id="googleLoginBtn" class="google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon">
+        Login with Google
+      </button>
+
+      <p class="link-text">
+        Don't have an account? <span id="registerLink">Register</span>
+      </p>
+    </div>
+
+  </div>
+
+  <script src="login.js"></script>
+</body>
+
+</html>

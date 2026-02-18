@@ -1,0 +1,9 @@
+flask
+flask-cors
+openai
+authlib
+python-dotenv
+requests
+pymongo
+python-aiml
+google-genai
