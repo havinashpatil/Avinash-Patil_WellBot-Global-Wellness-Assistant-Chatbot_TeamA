@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background: #eaf4f2;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 900px;
+  height: 520px;
+  background: white;
+  display: flex;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(116, 185, 255, 0.4);
+}
+
+.google-btn {
+  background: white !important;
+  color: #444 !important;
+  border: 1px solid #ddd !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.google-btn:hover {
+  background: #f8f9fa !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 15px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.separator hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.separator span {
+  padding: 0 10px;
+}
+
+/* Left Section */
+.left {
+  width: 50%;
+  background: linear-gradient(135deg, #1f7a63, #4db6ac);
+  color: white;
+  padding: 60px;
+}
+
+.left h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.left p {
+  margin-bottom: 25px;
+}
+
+.left ul li {
+  margin: 15px 0;
+  list-style: none;
+}
+
+/* Right Section */
+.right {
+  width: 50%;
+  padding: 60px;
+}
+
+.right h2 {
+  margin-bottom: 20px;
+  color: #1f7a63;
+}
+
+.right input,
+.right select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.right button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #1f7a63;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.link-text {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.link-text span {
+  color: #1f7a63;
+  cursor: pointer;
+  font-weight: bold;
+}
