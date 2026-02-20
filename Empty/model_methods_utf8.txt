@@ -1,0 +1,53 @@
+﻿python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python 
+list_models.py > 
+model_methods.txt 
+2>&1; cat 
+model_methods.txt
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Traceba   
+ ck (most recent     
+call last)::Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  File "C:\Users\ADMI
+N\OneDrive\Desktop\Em
+pty\list_models.py", 
+line 14, in 
+list_models
+    print(f"  
+Methods: {model.suppo
+rted_generation_metho
+ds}")
+                     
+   ^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMI
+N\AppData\Local\Progr
+ams\Python\Python313\
+Lib\site-packages\pyd
+antic\main.py", line 
+1026, in __getattr__
+    raise AttributeEr
+ror(f'{type(self).__n
+ame__!r} object has 
+no attribute 
+{item!r}')
+AttributeError: 
+'Model' object has 
+no attribute 'support
+ed_generation_methods
+'
+Listing available models and methods...
+Model: models/gemini-2.5-flash

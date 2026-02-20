@@ -1,0 +1,9 @@
+PySide6
+opencv-python
+pyaudio
+google-genai
+python-dotenv
+pillow
+numpy
+websockets
+argparse
