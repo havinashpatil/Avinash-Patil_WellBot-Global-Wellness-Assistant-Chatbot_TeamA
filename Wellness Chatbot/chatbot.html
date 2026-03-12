@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WellBot Assistant | AI Healthcare Chat</title>
+    <meta name="description"
+        content="Chat with WellBot - your AI-powered healthcare assistant for wellness advice, symptom analysis, and prescription analysis.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/healthcare.css">
+    <style>
+        body {
+            background: var(--bg-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            background: var(--card-bg);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .chat-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, var(--primary), #6CC7A6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .bot-status {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bot-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #34D399;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            max-width: 78%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            line-height: 1.6;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, var(--primary), #6DD5FA);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 3px 12px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .bot-message {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .user-message .msg-time {
+            text-align: right;
+        }
+
+        .bot-message .msg-time {
+            text-align: left;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 12px 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: fit-content;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .chat-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--card-bg);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 14px 22px;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            outline: none;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        #userInput:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-actions select,
+        .header-actions button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .header-actions select option {
+            color: var(--text-dark);
+            background: white;
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .feedback-modal {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius-md);
+            width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .star-rating {
+            font-size: 2.2rem;
+            color: #CBD5E1;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .star-rating .active {
+            color: #F59E0B;
+        }
+
+        textarea {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 15px;
+            margin-bottom: 20px;
+            height: 100px;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        /* Image Preview */
+        .image-preview-bar {
+            display: none;
+            padding: 10px 15px;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-preview-bar.active {
+            display: flex;
+        }
+
+        /* Scrollbar */
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #DDE4EE;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-header {
+                padding: 15px;
+            }
+
+            .chat-messages {
+                padding: 15px;
+            }
+
+            .chat-footer {
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="chat-header-info">
+                <a href="/dashboard" style="color: white; font-size: 1.2rem;"><i class="fa-solid fa-arrow-left"></i></a>
+                <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div>
+                    <h2 style="font-size: 1.1rem; margin: 0;" data-i18n="bot_panel_title">WellBot Assistant</h2>
+                    <div class="bot-status" data-i18n="status_online">Online</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <select id="languageSelect">
+                    <option value="English">🇬🇧 EN</option>
+                    <option value="Hindi">🇮🇳 HI</option>
+                    <option value="Spanish">🇪🇸 ES</option>
+                    <option value="French">🇫🇷 FR</option>
+                    <option value="Kannada">🇮🇳 KN</option>
+                </select>
+                <button onclick="openFeedback()"><i class="fa-solid fa-star"></i> <span
+                        data-i18n="btn_rate">Rate</span></button>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="chatBox">
+            <div class="message bot-message" id="welcomeMsg">
+                <div><span data-i18n="welcome_bot_msg">Hello! 👋 I am your personal WellBot AI. How can I assist you
+                        today? You can also upload</span> <span data-i18n="presc_msg">prescription images for
+                        analysis!</span></div>
+                <span class="msg-time" id="welcomeTime"></span>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <div class="image-preview-bar" id="imagePreview">
+                <img id="previewImg" src=""
+                    style="height: 50px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <span onclick="clearImage()"
+                    style="cursor: pointer; color: #EF4444; font-weight: 600; font-size: 0.85rem;">
+                    <i class="fa-solid fa-xmark"></i> <span data-i18n="btn_remove">Remove</span>
+                </span>
+            </div>
+            <div class="input-row">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;"
+                    onchange="handleImageSelect(event)">
+                <button class="icon-btn" onclick="document.getElementById('imageInput').click()" title="Upload Image">
+                    <i class="fa-solid fa-image"></i>
+                </button>
+                <button class="icon-btn" id="voiceBtn" onclick="startVoice()" title="Voice Input">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <input type="text" id="userInput" placeholder="Type your message..."
+                    data-i18n-placeholder="chat_placeholder">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i
+                        class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-modal">
+            <h3 data-i18n="feedback_title">How was your experience?</h3>
+            <p style="color: var(--text-muted); margin-top: 5px;" data-i18n="feedback_subtitle">Your feedback helps us
+                improve!</p>
+            <div class="star-rating" id="starRating">
+                <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span
+                    data-value="4">★</span><span data-value="5">★</span>
+            </div>
+            <textarea id="feedbackComment" placeholder="Share your thoughts..."
+                data-i18n-placeholder="feedback_placeholder"></textarea>
+            <button class="btn btn-gradient" style="width:100%" onclick="submitFeedback()"
+                data-i18n="btn_submit_feedback">Submit Feedback</button>
+            <p onclick="closeFeedback()"
+                style="margin-top:15px; color: var(--text-muted); cursor:pointer; font-size:0.9rem;"
+                data-i18n="btn_maybe_later">Maybe later</p>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const languageSelect = document.getElementById('languageSelect');
+        const imageInput = document.getElementById('imageInput');
+        let selectedRating = 0;
+        let selectedImageBase64 = null;
+
+        // Set welcome time
+        const welcomeTime = document.getElementById('welcomeTime');
+        if (welcomeTime) welcomeTime.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme + '-theme';
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedImageBase64 = e.target.result;
+                document.getElementById('previewImg').src = selectedImageBase64;
+                document.getElementById('imagePreview').classList.add('active');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImage() {
+            selectedImageBase64 = null;
+            imageInput.value = '';
+            document.getElementById('imagePreview').classList.remove('active');
+        }
+
+        // Multi-language welcome
+        languageSelect.addEventListener('change', () => {
+            const lang = languageSelect.value;
+            const msgs = {
+                'English': 'Hello! 👋 How can I assist you today?',
+                'Hindi': 'नमस्ते! 👋 मैं आपकी कैसे मदद कर सकता हूँ?',
+                'Spanish': '¡Hola! 👋 ¿Cómo puedo ayudarte hoy?',
+                'French': 'Bonjour ! 👋 Comment puis-je vous aider ?',
+                'Kannada': 'ನಮಸ್ಕಾರ! 👋 ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?'
+            };
+            const welcomeMsg = document.getElementById('welcomeMsg');
+            if (welcomeMsg) {
+                welcomeMsg.querySelector('div').textContent = msgs[lang] || msgs['English'];
+            }
+        });
+
+        function showTyping() {
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator';
+            typing.id = 'typingIndicator';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+            chatBox.appendChild(typing);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function hideTyping() {
+            const t = document.getElementById('typingIndicator');
+            if (t) t.remove();
+        }
+
+        function appendMessage(text, isUser, img = null) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+
+            if (img) {
+                const imgEl = document.createElement('img');
+                imgEl.src = img;
+                imgEl.style.cssText = "max-width:200px; display:block; border-radius:8px; margin-bottom:10px;";
+                div.appendChild(imgEl);
+            }
+
+            const textEl = document.createElement('div');
+            textEl.textContent = text;
+            div.appendChild(textEl);
+
+            const timeEl = document.createElement('span');
+            timeEl.className = 'msg-time';
+            timeEl.textContent = formatTime(new Date());
+            div.appendChild(timeEl);
+
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message && !selectedImageBase64) return;
+
+            appendMessage(message || (selectedImageBase64 ? "Analyzing prescription..." : ""), true, selectedImageBase64);
+            const bodyData = {
+                message: message,
+                mood: 'Neutral',
+                email: localStorage.getItem('email') || 'Anonymous',
+                name: localStorage.getItem('name') || 'Guest',
+                language: languageSelect.value,
+                image: selectedImageBase64
+            };
+
+            userInput.value = '';
+            clearImage();
+            showTyping();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+                const data = await response.json();
+                hideTyping();
+                appendMessage(data.reply, false);
+            } catch (err) {
+                hideTyping();
+                appendMessage("Error connecting to AI.", false);
+            }
+        }
+
+        // Voice Input
+        function startVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Voice recognition not supported in this browser.");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = languageSelect.value === 'Hindi' ? 'hi-IN' :
+                languageSelect.value === 'Spanish' ? 'es-ES' :
+                    languageSelect.value === 'French' ? 'fr-FR' :
+                        languageSelect.value === 'Kannada' ? 'kn-IN' : 'en-US';
+            recognition.start();
+
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.innerHTML = '<i class="fa-solid fa-circle-stop" style="color:#EF4444;"></i>';
+
+            recognition.onresult = (event) => {
+                userInput.value = event.results[0][0].transcript;
+                sendMessage();
+            };
+
+            recognition.onend = () => {
+                voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+            };
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        // Feedback
+        function openFeedback() { document.getElementById('feedbackOverlay').style.display = 'flex'; }
+        function closeFeedback() { document.getElementById('feedbackOverlay').style.display = 'none'; }
+
+        document.getElementById('starRating').addEventListener('click', (e) => {
+            if (e.target.tagName === 'SPAN') {
+                selectedRating = e.target.getAttribute('data-value');
+                const stars = document.getElementById('starRating').children;
+                for (let i = 0; i < 5; i++) {
+                    stars[i].classList.toggle('active', i < selectedRating);
+                }
+            }
+        });
+
+        async function submitFeedback() {
+            if (selectedRating === 0) return alert("Please select a rating.");
+            const res = await fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: localStorage.getItem('email'),
+                    rating: selectedRating,
+                    comment: document.getElementById('feedbackComment').value
+                })
+            });
+            if (res.ok) {
+                alert("Thank you for your feedback!");
+                closeFeedback();
+            }
+        }
+    </script>
+</body>
+
+</html>

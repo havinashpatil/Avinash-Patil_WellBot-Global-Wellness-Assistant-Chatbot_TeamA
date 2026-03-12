@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare AI | Smart Offline Health Chatbot</title>
+    <script src="translations.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="healthcare.css">
+    <style>
+        /* Hero Section */
+        .hero {
+            padding: 180px 5% 100px;
+            background: linear-gradient(135deg, #EBF5FB 0%, #FFFFFF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 550px;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 25px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+        }
+
+        /* Trust Section */
+        .trust-section {
+            background-color: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 80px 5%;
+        }
+
+        .trust-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .trust-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .trust-section h2 {
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 5% 40px;
+            background-color: #F0F4F8;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #DDE4EE;
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 150px;
+            }
+
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .hero-image {
+                margin-top: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span>🌿</span> <span data-i18n="logo_text_full">HealthCare AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active" data-i18n="nav_home">Home</a>
+            <a href="#" data-i18n="nav_about">About</a>
+            <a href="#" data-i18n="nav_how_it_works">How It Works</a>
+            <a href="/dashboard" data-i18n="nav_chat_link">Chat</a>
+            <a href="#" data-i18n="nav_contact">Contact</a>
+        </div>
+        <div class="auth-btns">
+            <select id="languageSelect"
+                style="background: var(--bg-light); border: 1px solid var(--border-color); padding: 5px; border-radius: 5px; margin-right: 10px;">
+                <option value="English">🇬🇧 EN</option>
+                <option value="Hindi">🇮🇳 HI</option>
+                <option value="Spanish">🇪🇸 ES</option>
+                <option value="French">🇫🇷 FR</option>
+                <option value="Kannada">🇮🇳 KN</option>
+            </select>
+            <a href="/login" class="btn btn-outline" data-i18n="btn_login">Login</a>
+            <a href="/register" class="btn btn-primary" data-i18n="btn_signup">Sign Up</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-i18n="hero_title">Your Smart AI <span class="text-primary">Health</span> Assistant</h1>
+            <p data-i18n="hero_subtitle">Get instant health guidance, symptom analysis, and wellness tips anytime,
+                anywhere—powered by private, offline AI.</p>
+            <div class="auth-btns">
+                <a href="/dashboard" class="btn btn-primary" style="padding: 16px 40px; font-size: 1.1rem;"
+                    data-i18n="btn_start_chat">Start Chatting</a>
+                <a href="#" class="btn btn-outline" style="padding: 16px 40px; font-size: 1.1rem;"
+                    data-i18n="btn_learn_more">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <!-- Placeholder for Hero Illustration -->
+            <div
+                style="width: 500px; height: 400px; background: var(--primary-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 5rem;">
+                🧑‍⚕️</div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-title">
+            <h2 data-i18n="features_title">Designed for Your Wellbeing</h2>
+            <p data-i18n="features_tagline">Experience healthcare support that's faster, safer, and always available.
+            </p>
+        </div>
+        <div class="container feature-grid">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 data-i18n="feat_instant_title">Instant Answers</h3>
+                    <p data-i18n="feat_instant_desc">No waiting in queues. Get immediate guidance on common health
+                        queries and symptoms.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 data-i18n="feat_private_title">100% Private</h3>
+                    <p data-i18n="feat_private_desc">Your data stays on your device. Our offline AI ensures maximum
+                        privacy for your health info.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3 data-i18n="feat_symptom_title">Symptom Guide</h3>
+                    <p data-i18n="feat_symptom_desc">Understand your symptoms better with structured, informative
+                        AI-driven conversations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 data-i18n="feat_safe_title">Safe & Secure</h3>
+                    <p data-i18n="feat_safe_desc">Professional guidance focused on safety, with built-in crisis
+                        detection and referrals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-section">
+        <div class="trust-content">
+            <div class="trust-icon">🛡️</div>
+            <h2 data-i18n="trust_title">Priority on Your Privacy</h2>
+            <p data-i18n="trust_desc">HealthCare AI uses local Llama models to process your requests. No health data is
+                ever uploaded to the cloud without your consent. Your privacy is our medical oath.</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;"><i data-i18n="trust_disclaimer">Disclaimer:
+                    This chatbot provides general health information only and is not a substitute for professional
+                    medical advice.</i></p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="grid-column: span 2;">
+                    <div class="logo" style="margin-bottom: 20px;" data-i18n="logo_text_full">🌿 HealthCare AI</div>
+                    <p style="color: var(--text-muted); max-width: 300px;" data-i18n="footer_desc">Empowering everyone
+                        with accessible, private, and intelligent health guidance.</p>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer_links">Quick Links</h4>
+                    <ul>
+                        <li><a href="#" data-i18n="nav_about">About Us</a></li>
+                        <li><a href="#" data-i18n="nav_features">Features</a></li>
+                        <li><a href="#" data-i18n="nav_how_it_works">How it Works</a></li>
+                        <li><a href="#" data-i18n="nav_contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer_support">Support</h4>
+                    <ul>
+                        <li><a href="#" data-i18n="nav_help">Help Center</a></li>
+                        <li><a href="#" data-i18n="nav_privacy">Privacy Policy</a></li>
+                        <li><a href="#" data-i18n="nav_terms">Terms of Use</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HealthCare AI. All rights reserved.</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="#">Twitter</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Facebook</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

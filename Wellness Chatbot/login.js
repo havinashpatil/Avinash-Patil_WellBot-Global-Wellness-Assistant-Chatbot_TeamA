@@ -7,6 +7,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Login submit button
   const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+  const adminMode = document.getElementById("adminMode");
+  const loginHeader = document.querySelector(".auth-header h2");
+
+  if (adminMode) {
+    adminMode.addEventListener("change", function () {
+      if (this.checked) {
+        loginHeader.textContent = "Admin Portal";
+        loginSubmitBtn.textContent = "Login as Admin";
+      } else {
+        loginHeader.textContent = "Welcome Back";
+        loginSubmitBtn.textContent = "Login to Account";
+      }
+    });
+  }
+
   if (loginSubmitBtn) {
     loginSubmitBtn.addEventListener("click", function () {
       console.log("Login submit button clicked");
@@ -75,14 +90,27 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(result => {
           if (result.success) {
+            if (adminMode && adminMode.checked && result.role !== 'admin') {
+              alert("❌ Unauthorized: This account does not have admin privileges.");
+              return;
+            }
+
             alert("✅ Login successful! Welcome back, " + result.name);
             localStorage.setItem('token', result.token);
             localStorage.setItem('name', result.name);
+            localStorage.setItem('role', result.role);
+            localStorage.setItem('email', email); // Store email for chat attribution
+
             // Clear form
             document.getElementById("loginEmail").value = "";
             document.getElementById("loginPassword").value = "";
-            // Redirect to home/chat page (adjust if needed)
-            window.location.href = "/dashboard";
+
+            // Redirect based on role
+            if (result.role === 'admin') {
+              window.location.href = "/admin/dashboard?token=" + result.token;
+            } else {
+              window.location.href = "/dashboard";
+            }
           } else {
             alert("❌ Error: " + result.error);
           }

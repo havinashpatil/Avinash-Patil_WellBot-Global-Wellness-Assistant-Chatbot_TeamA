@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         alert("✅ Registration successful! Welcome, " + result.name);
                         localStorage.setItem('token', result.token);
                         localStorage.setItem('name', result.name);
+                        localStorage.setItem('role', result.role || 'user');
+                        localStorage.setItem('email', email);
+
                         // Clear form
                         document.getElementById("name").value = "";
                         document.getElementById("email").value = "";

@@ -3,48 +3,153 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>WellBot | Create Account</title>
-    <link rel="stylesheet" href="register.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | HealthCare AI</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="healthcare.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #EBF5FB 0%, #FFFFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-container {
+            background: var(--white);
+            padding: 50px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-hover);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .auth-header h2 {
+            margin: 20px 0 10px;
+            font-size: 2rem;
+            color: var(--text-dark);
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group.full {
+            grid-column: span 2;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #DDE4EE;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+        }
+
+        .auth-footer {
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-group.full {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container">
-
-        <!-- Left Section -->
-        <div class="left">
-            <h1>🌿 WellBot</h1>
-            <p>Your personal wellness companion</p>
-
-            <ul>
-                <li>✔ Mental wellness support</li>
-                <li>✔ Daily healthy habits</li>
-                <li>✔ Stress & mood tracking</li>
-            </ul>
+    <div class="auth-container">
+        <div class="logo" style="justify-content: center; margin-bottom: 10px;">
+            <span>🌿</span> HealthCare AI
+        </div>
+        <div class="auth-header">
+            <h2>Join HealthCare AI</h2>
+            <p>Start your journey to better health today</p>
         </div>
 
-        <!-- Right Section -->
-        <div class="right">
-            <h2>Create Account</h2>
-
-            <input id="name" type="text" placeholder="Full Name">
-            <input id="email" type="email" placeholder="Email Address">
-            <input id="password" type="password" placeholder="Password">
-
-            <select id="language">
-                <option value="">Preferred Language</option>
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Telugu</option>
-            </select>
-
-            <button id="registerBtn">Register</button>
-
-            <p class="link-text">
-                Already have an account? <span id="loginBtn">Login</span>
-            </p>
+        <div class="input-grid">
+            <div class="input-group full">
+                <label>Full Name</label>
+                <input type="text" id="name" placeholder="John Doe">
+            </div>
+            <div class="input-group full">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="john@example.com">
+            </div>
+            <div class="input-group full">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <div class="input-group full">
+                <label>Preferred Language</label>
+                <select id="language">
+                    <option value="">Select Language</option>
+                    <option>English</option>
+                    <option>Hindi</option>
+                    <option>Telugu</option>
+                </select>
+            </div>
         </div>
 
+        <button id="registerBtn" class="btn btn-primary auth-btn">Create Account</button>
+
+        <div class="auth-footer">
+            Already have an account? <a href="/login" id="loginBtn">Login</a>
+        </div>
     </div>
 
     <script src="register.js"></script>

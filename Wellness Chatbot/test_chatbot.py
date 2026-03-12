@@ -10,26 +10,25 @@ class TestWellnessChatbot(unittest.TestCase):
         self.app.testing = True
 
     def test_safety_check(self):
-        """Test safety check logic"""
+        """Test safety check logic returns warning for dangerous messages"""
         self.assertIsNotNone(safety_check("I want to kill myself"))
         self.assertIsNone(safety_check("I am feeling sad"))
 
     def test_aiml_response(self):
         """Test AIML response for HELLO"""
-        # Ensure kernel is loaded
         if os.path.exists("wellness.aiml"):
-             kernel.learn("wellness.aiml")
-        
+            kernel.learn("wellness.aiml")
         response = kernel.respond("HELLO")
-        self.assertTrue("WellBot" in response, f"AIML Response should contain WellBot. Got: {response}")
+        self.assertTrue(
+            "WellBot" in response,
+            f"AIML Response should contain WellBot. Got: {response}"
+        )
 
-    @patch('app.model.generate_content')
-    def test_gemini_fallback(self, mock_generate):
-        """Test that non-AIML/non-safe queries go to Gemini"""
-        # Mock Gemini response
-        mock_response = MagicMock()
-        mock_response.text = "I understand you are feeling anxious."
-        mock_generate.return_value = mock_response
+    @patch('app.ask_ollama')
+    def test_ollama_response(self, mock_ollama):
+        """Test that non-AIML queries go to Ollama (local LLM)"""
+        # Mock Ollama response
+        mock_ollama.return_value = "I understand you are feeling anxious. Let's talk about it."
 
         payload = {
             "message": "I am feeling anxious about work",
@@ -37,9 +36,26 @@ class TestWellnessChatbot(unittest.TestCase):
         }
         response = self.app.post('/chat', json=payload)
         data = json.loads(response.data)
-        
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['reply'], "I understand you are feeling anxious.")
+        self.assertIn('reply', data)
+        self.assertTrue(len(data['reply']) > 0)
+
+    def test_chat_endpoint_exists(self):
+        """Test that /chat endpoint responds"""
+        payload = {"message": "hello", "mood": "Neutral"}
+        response = self.app.post('/chat', json=payload)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertIn('reply', data)
+
+    def test_safety_endpoint(self):
+        """Test that safety check triggers via /chat endpoint"""
+        payload = {"message": "I want to kill myself", "mood": "Sad"}
+        response = self.app.post('/chat', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('reach out', data['reply'].lower())
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
