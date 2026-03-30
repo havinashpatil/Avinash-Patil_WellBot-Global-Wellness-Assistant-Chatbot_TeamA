@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | HealthCare AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="healthcare.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #EBF5FB 0%, #FFFFFF 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-container {
+      background: var(--white);
+      padding: 50px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-hover);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+    }
+
+    .auth-header h2 {
+      margin: 20px 0 10px;
+      font-size: 2rem;
+      color: var(--text-dark);
+    }
+
+    .auth-header p {
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #DDE4EE;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .separator {
+      margin: 25px 0;
+      display: flex;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #DDE4EE;
+    }
+
+    .separator span {
+      padding: 0 15px;
+    }
+
+    .google-btn {
+      width: 100%;
+      background: white;
+      border: 1px solid #DDE4EE;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .google-btn:hover {
+      background: #F8FBFE;
+    }
+
+    .auth-footer {
+      margin-top: 30px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="auth-container">
+    <div class="logo" style="justify-content: center; margin-bottom: 10px;">
+      <span>🌿</span> HealthCare AI
+    </div>
+    <div class="auth-header">
+      <h2>Welcome Back</h2>
+      <p>Enter your details to access your health assistant</p>
+    </div>
+
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="name@example.com">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••">
+    </div>
+
+    <!-- Admin Logic UI -->
+    <div style="margin-bottom: 20px; text-align: left; display: flex; align-items: center; gap: 10px;">
+      <input type="checkbox" id="adminMode" style="width: 20px; height: 20px; cursor: pointer;">
+      <label for="adminMode" style="margin-bottom: 0; cursor: pointer; color: #64748B; font-size: 0.9rem;">Login as
+        Administrator</label>
+    </div>
+
+    <button id="loginSubmitBtn" class="btn btn-primary auth-btn">Login to Account</button>
+
+    <div class="separator"><span>OR</span></div>
+
+    <button id="googleLoginBtn" class="google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
+      Continue with Google
+    </button>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="/register" id="registerLink">Sign Up</a>
+      <p style="margin-top: 20px; font-size: 0.85rem;">
+        Facing issues? <a href="#" onclick="openReportModal()" style="color: var(--primary);">Report here</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Report Issue Modal -->
+  <div id="reportModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:12px; width:100%; max-width:400px; text-align:left;">
+      <h3 style="margin-top:0;">Report an Issue</h3>
+      <p style="color:#64748B; font-size:0.9rem; margin-bottom:20px;">Let us know what problem you're facing, and our
+        admin will assist you.</p>
+
+      <div class="input-group">
+        <label>Your Email</label>
+        <input type="email" id="reportEmail" placeholder="name@example.com">
+      </div>
+      <div class="input-group">
+        <label>Describe the issue</label>
+        <textarea id="reportText"
+          style="width:100%; height:100px; padding:12px; border:1px solid #DDE4EE; border-radius:8px; font-family:inherit; resize:none;"
+          placeholder="e.g. Can't login, password reset not working..."></textarea>
+      </div>
+
+      <button onclick="submitReport()" class="btn btn-primary" style="width:100%; padding:14px; margin-top:10px;">Submit
+        Report</button>
+      <button onclick="closeReportModal()"
+        style="width:100%; background:none; border:none; color:#64748B; margin-top:15px; cursor:pointer; font-size:0.9rem;">Cancel</button>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+  <script>
+    function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
+    function closeReportModal() { document.getElementById('reportModal').style.display = 'none'; }
+
+    async function submitReport() {
+      const email = document.getElementById('reportEmail').value;
+      const issue = document.getElementById('reportText').value;
+
+      if (!email || !issue) return alert("Please fill in all fields.");
+
+      const response = await fetch('/api/report-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, issue })
+      });
+
+      if (response.ok) {
+        alert("Issue reported successfully. Admin will look into it.");
+        closeReportModal();
+      } else {
+        alert("Failed to report issue. Please try again later.");
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | WellBot – AI Smart Health Monitoring Platform</title>
+    <meta name="description"
+        content="WellBot AI-powered healthcare dashboard with symptom checker, mood tracking, nutrition guide, and wellness analytics.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="healthcare.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="/translations.js"></script>
+    <script src="/dashboard.js"></script>
+    <style>
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav {
+            margin-top: 40px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .dashboard-main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Grid Layouts */
+        .mood-grid,
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .mood-card,
+        .diet-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .mood-card:hover,
+        .diet-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .mood-card span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Floating Chatbot */
+        .chat-widget-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(var(--primary-rgb), 0.4);
+            z-index: 1001;
+            transition: var(--transition);
+        }
+
+        .chat-widget-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.5);
+        }
+
+        .chat-panel {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 400px;
+            height: 550px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1001;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-panel.active {
+            display: flex;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--bg-light);
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Nutrition Details */
+        .nutrition-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .vitamin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .vitamin-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .vitamin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .vitamin-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 5px;
+        }
+
+        /* Profile Details */
+        .profile-container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            max-width: 600px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--bg-light);
+        }
+
+        .profile-info-row span:first-child {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Stats Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .sidebar-controls {
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-light);
+            color: var(--text-dark);
+            outline: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .control-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            border: 1px solid var(--border-color);
+            height: 300px;
+            position: relative;
+        }
+
+        .tip-banner {
+            background: linear-gradient(135deg, var(--primary), #6DD5FA);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.2);
+        }
+
+        /* Widgets Row */
+        .widgets-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Symptom Checker Header */
+        .symptom-header {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+            padding: 35px;
+            border-radius: var(--radius-md);
+            margin-bottom: 25px;
+        }
+
+        .symptom-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .symptom-header p {
+            opacity: 0.9;
+        }
+
+        /* Reports Header */
+        .reports-header {
+            background: linear-gradient(135deg, var(--primary), #6DD5FA);
+            color: white;
+            padding: 35px;
+            border-radius: var(--radius-md);
+            margin-bottom: 25px;
+        }
+
+        .reports-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .reports-header p {
+            opacity: 0.9;
+        }
+
+        /* Symptom Examples */
+        .symptom-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .symptom-example {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .symptom-example:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-main {
+                margin-left: 60px !important;
+                padding: 20px !important;
+            }
+
+            .chat-panel {
+                width: calc(100vw - 20px);
+                right: 10px;
+                bottom: 90px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo"><span>🌿</span> <span data-i18n="logo_text">WellBot</span></div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" onclick="switchTab('overview')"><i class="fa-solid fa-chart-pie"></i>
+                    <span data-i18n="nav_overview">Overview</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('nutrition')"><i class="fa-solid fa-apple-whole"></i>
+                    <span data-i18n="nav_nutrition">Nutrition Guide</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('symptom')"><i class="fa-solid fa-stethoscope"></i>
+                    <span data-i18n="nav_symptom">Symptom Checker</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('healthAnalysis')"><i class="fa-solid fa-heart-pulse"></i>
+                    <span data-i18n="nav_health_analysis">Health Analysis</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('reports')"><i class="fa-solid fa-file-medical"></i>
+                    <span data-i18n="nav_reports">Health Reports</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('reportIssue')"><i class="fa-solid fa-flag"></i>
+                    <span>Report Issue</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('chatbot')"><i class="fa-solid fa-robot"></i>
+                    <span data-i18n="nav_chatbot">WellBot Chat</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('profile')"><i class="fa-solid fa-user-gear"></i> <span
+                        data-i18n="nav_profile">Profile Settings</span></div>
+
+                <div class="sidebar-controls">
+                    <div class="control-group">
+                        <label><i class="fa-solid fa-palette"></i> <span data-i18n="label_theme">Theme</span></label>
+                        <select id="themeSwitcher">
+                            <option value="light" data-i18n="opt_light">☀️ Light Mode</option>
+                            <option value="dark" data-i18n="opt_dark">🌙 Dark Mode</option>
+                            <option value="blue" data-i18n="opt_blue">💙 Health Blue</option>
+                            <option value="green" data-i18n="opt_green">🌿 Wellness Green</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fa-solid fa-globe"></i> <span data-i18n="label_lang">Language</span></label>
+                        <select id="languageSelect">
+                            <option value="English">🇬🇧 English</option>
+                            <option value="Hindi">🇮🇳 Hindi</option>
+                            <option value="Spanish">🇪🇸 Spanish</option>
+                            <option value="French">🇫🇷 French</option>
+                            <option value="Kannada">🇮🇳 Kannada</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fa-solid fa-robot"></i> <span data-i18n="label_bot_mode">Bot
+                                Mode</span></label>
+                        <select id="chatModeSelector">
+                            <option value="wellness" data-i18n="mode_wellness">Wellness Bot</option>
+                            <option value="mental" data-i18n="mode_mental">Mental Support</option>
+                            <option value="nutrition" data-i18n="mode_nutrition">Nutritionionist</option>
+                            <option value="fitness" data-i18n="mode_fitness">Fitness Coach</option>
+                        </select>
+                    </div>
+                </div>
+            </nav>
+            <div style="margin-top: auto;">
+                <div class="nav-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>
+                    <span data-i18n="nav_logout">Logout</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <!-- Tab: Overview -->
+            <section id="overviewTab" class="dashboard-section active">
+                <header class="top-header" style="margin-bottom: 30px;">
+                    <div>
+                        <h2><span data-i18n="welcome_text">Welcome back,</span> <span id="userName"
+                                class="text-primary">Friend</span> 👋</h2>
+                        <p style="color: var(--text-muted);" data-i18n="welcome_subtext">Your personalized wellness hub.
+                        </p>
+                    </div>
+                </header>
+
+                <div class="tip-banner fade-in">
+                    <div style="font-size: 2rem;">💡</div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;" data-i18n="tip_title">Daily Wellness Tip</h4>
+                        <p id="dailyTipText" data-i18n="tip_default">Stay active and eat fresh greens today!</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card fade-in">
+                        <h3><i class="fa-solid fa-face-smile" style="margin-right: 5px;"></i> <span
+                                data-i18n="stat_mood">Mood Status</span></h3>
+                        <p id="moodStatus" data-i18n="mood_neutral">Neutral</p>
+                    </div>
+                    <div class="stat-card fade-in" style="animation-delay: 0.1s;">
+                        <h3><i class="fa-solid fa-message" style="margin-right: 5px;"></i> <span
+                                data-i18n="stat_chats">Total Chats</span></h3>
+                        <p id="chatCountStat">0</p>
+                    </div>
+                    <div class="stat-card fade-in" style="animation-delay: 0.2s;">
+                        <h3><i class="fa-solid fa-heart-pulse" style="margin-right: 5px;"></i> <span
+                                data-i18n="stat_score">Wellness Score</span></h3>
+                        <p id="wellScore">85%</p>
+                    </div>
+                </div>
+
+                <!-- Widgets Row: Hydration + Chat Stats -->
+                <div class="widgets-row">
+                    <div class="widget-card hydration-widget fade-in" style="animation-delay: 0.3s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="color: #0369A1;"><i class="fa-solid fa-droplet"></i> <span
+                                        data-i18n="hydration_title">Hydration Tracker</span></h4>
+                                <p style="color: #0C4A6E; margin-top: 5px; font-size: 0.9rem;"
+                                    data-i18n="hydration_goal">Goal: 8 glasses/day</p>
+                            </div>
+                            <div id="hydrationCount" style="font-size: 2rem; font-weight: 700; color: #0284C7;">0/8
+                            </div>
+                        </div>
+                        <div class="hydration-progress">
+                            <div class="hydration-progress-bar" id="hydrationBar" style="width: 0%;"></div>
+                        </div>
+                        <button class="btn btn-gradient"
+                            style="margin-top: 12px; padding: 8px 18px; font-size: 0.85rem;" onclick="addWater()">
+                            <i class="fa-solid fa-plus"></i> <span data-i18n="btn_add_water">Add Glass</span>
+                        </button>
+                    </div>
+                    <div class="widget-card fade-in" style="animation-delay: 0.4s;">
+                        <h4><i class="fa-solid fa-chart-bar" style="color: var(--primary);"></i> <span
+                                data-i18n="usage_title">Wellness Summary</span></h4>
+                        <div style="margin-top: 15px;">
+                            <div class="diet-items">
+                                <div class="diet-item">
+                                    <span class="dot veg"></span>
+                                    <div>
+                                        <strong data-i18n="diet_veg">Vegetables</strong>
+                                        <p data-i18n="diet_veg_desc">Spinach, Kale, Broccoli for mental clarity.</p>
+                                    </div>
+                                </div>
+                                <div class="diet-item">
+                                    <span class="dot prot"></span>
+                                    <div>
+                                        <strong data-i18n="diet_prot">Proteins</strong>
+                                        <p data-i18n="diet_prot_desc">Salmon, Eggs, Beans for muscle & brain.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widgets-row">
+                        <div class="chart-container" style="height: 300px;">
+                            <h4 data-i18n="chart_mood_title">Mood History</h4>
+                            <canvas id="moodChart"></canvas>
+                        </div>
+                    </div>
+            </section>
+
+            </section>
+
+            <!-- Tab: Symptom Checker -->
+            <section id="symptomTab" class="dashboard-section" style="display: none;">
+                <div class="symptom-header">
+                    <h1><i class="fa-solid fa-stethoscope"></i> <span data-i18n="symptom_title">AI Symptom
+                            Checker</span></h1>
+                    <p data-i18n="symptom_subtitle">Describe how you're feeling and our AI will provide guidance.</p>
+                </div>
+
+                <div class="glass-card" style="padding: 25px;">
+                    <h3 style="margin-bottom: 15px;"><span data-i18n="symptom_prompt_title">How can we help
+                            today?</span></h3>
+                    <textarea id="symptomInput" class="form-control" rows="4"
+                        placeholder="E.g., I have had a fever of 101F since yesterday, with a mild headache and cough..."
+                        style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; background: var(--bg-light); color: var(--text-dark);"></textarea>
+
+                    <button class="btn btn-primary" id="btnCheckSymptoms" onclick="window.checkSymptoms()"
+                        style="width: 100%; padding: 12px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-user-doctor"></i> <span data-i18n="btn_analyze_symptoms">Analyze
+                            Symptoms</span>
+                    </button>
+
+                    <div id="symptomResultBox" style="margin-top: 20px;"></div>
+                </div>
+            </section>
+
+            <!-- Tab: Nutrition Guide -->
+            <section id="nutritionTab" class="dashboard-section" style="display: none;">
+                <div class="nutrition-header">
+                    <h1><i class="fa-solid fa-apple-whole"></i> <span data-i18n="nutri_title">Nutrition Guide</span>
+                    </h1>
+                    <p data-i18n="nutri_subtitle">Essential fuels for your body and mind.</p>
+                </div>
+
+                <div class="nutrition-modular-grid">
+                    <!-- Vitamins section -->
+                    <div class="nutrition-group">
+                        <div class="nutrition-group-title">
+                            <h3><i class="fa-solid fa-capsules"></i> Vitamins</h3>
+                        </div>
+                        <div class="vitamin-grid">
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-eye"></i> Vitamin A</h4>
+                                <p>Vision & Immunity</p>
+                            </div>
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-bolt"></i> Vitamin B</h4>
+                                <p>Energy & Brain</p>
+                            </div>
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-shield-virus"></i> Vitamin C</h4>
+                                <p>Immunity & Recovery</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Minerals section -->
+                    <div class="nutrition-group">
+                        <div class="nutrition-group-title">
+                            <h3><i class="fa-solid fa-gem"></i> Minerals</h3>
+                        </div>
+                        <div class="vitamin-grid">
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-magnet"></i> Iron</h4>
+                                <p>Blood Health</p>
+                            </div>
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-virus-slash"></i> Zinc</h4>
+                                <p>Immune Support</p>
+                            </div>
+                            <div class="vitamin-card glass-card">
+                                <h4><i class="fa-solid fa-brain"></i> Magnesium</h4>
+                                <p>Nerve Function</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proteins section -->
+                    <div class="nutrition-group">
+                        <div class="nutrition-group-title">
+                            <h3><i class="fa-solid fa-drumstick-bite"></i> Proteins</h3>
+                        </div>
+                        <div class="vitamin-grid">
+                            <div class="vitamin-card glass-card">
+                                <h4>Eggs & Fish</h4>
+                                <p>Building Blocks</p>
+                            </div>
+                            <div class="vitamin-card glass-card">
+                                <h4>Lentils & Beans</h4>
+                                <p>Plant Power</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nutrition-tools-row">
+                        <!-- BMI Calculator -->
+                        <div class="tool-card glass-card">
+                            <h3><i class="fa-solid fa-weight-scale"></i> BMI Calculator</h3>
+                            <div class="tool-inputs">
+                                <input type="number" id="weight" placeholder="Weight (kg)" class="form-control">
+                                <input type="number" id="height" placeholder="Height (cm)" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="calculateBMI()">Calculate</button>
+                            <p id="bmiResult" class="tool-result"></p>
+                        </div>
+
+                        <!-- AI Diet Planner -->
+                        <div class="tool-card glass-card">
+                            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Diet Planner</h3>
+                            <select id="dietGoal" class="form-control">
+                                <option value="Weight loss">Weight Loss</option>
+                                <option value="Muscle gain">Muscle Gain</option>
+                                <option value="Balanced diet">Balanced Diet</option>
+                            </select>
+                            <button class="btn btn-gradient" onclick="getDietRecommendation()">Recommend Plan</button>
+                            <p id="dietResult" class="tool-result"></p>
+                        </div>
+
+                        <!-- Calories Tracker -->
+                        <div class="tool-card glass-card">
+                            <h3><i class="fa-solid fa-fire"></i> Calories Tracker</h3>
+                            <div class="tool-inputs">
+                                <input type="text" id="foodName" placeholder="Food Name" class="form-control">
+                                <input type="number" id="calories" placeholder="kcal" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="addCalories()">Add</button>
+                            <p id="totalCalories" class="tool-result">Total: 0 kcal</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Health Analysis -->
+            <section id="healthAnalysisTab" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1><i class="fa-solid fa-chart-line"></i> Health Analysis</h1>
+                    <p>Deeper insights into your physical activity and vitals.</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <!-- Step Counter -->
+                    <div class="analysis-card glass-card highlight-card">
+                        <h3><i class="fa-solid fa-person-walking"></i> Step Counter</h3>
+                        <h1 id="stepCountDisplay">8,432</h1>
+                        <p>Progress towards 10k goal</p>
+                    </div>
+
+                    <!-- Heart Rate -->
+                    <div class="analysis-card glass-card pulse-card">
+                        <h3><i class="fa-solid fa-heart-pulse"></i> Heart Rate</h3>
+                        <h1 id="liveHeartRate">72 <small>BPM</small></h1>
+                        <p>Real-time estimation</p>
+                    </div>
+
+                    <!-- Sleep Tracker -->
+                    <div class="analysis-card glass-card">
+                        <h3><i class="fa-solid fa-bed"></i> Sleep Tracker</h3>
+                        <div class="sleep-input-group">
+                            <input type="number" id="sleepHours" placeholder="Hours" class="form-control">
+                            <button class="btn btn-primary btn-sm" onclick="saveSleep()">Save</button>
+                        </div>
+                        <p id="sleepStatus"></p>
+                    </div>
+
+                    <!-- Mood History -->
+                    <div class="analysis-card glass-card chart-wide">
+                        <h3><i class="fa-solid fa-face-smile"></i> Mental Wellness Trend</h3>
+                        <canvas id="analyticsMoodChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: WellBot Chat -->
+            <section id="chatbotTab" class="dashboard-section" style="display: none; padding: 0;">
+                <div class="chatbot-immersive-frame">
+                    <div class="chat-header">
+                        <h2><i class="fa-solid fa-robot"></i> WellBot AI Assistant</h2>
+                        <span class="status-badge online" data-i18n="status_online">Online</span>
+                    </div>
+                    <div id="fullChatMessages" class="chat-area"
+                        style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                    </div>
+                    <div id="fullChatImagePreview"
+                        style="display:none; padding:10px; background: var(--bg-light); border-top:1px solid var(--border-color); align-items:center; gap:10px;">
+                        <img id="fullPreviewImg" src=""
+                            style="height:40px; border-radius:4px; border:1px solid var(--border-color);">
+                        <span onclick="clearFullImage()"
+                            style="cursor:pointer; color:#EF4444; font-size:0.8rem; font-weight:600;">✕</span>
+                    </div>
+                    <div class="chat-footer">
+                        <input type="file" id="fullImageInput" accept="image/*" style="display:none;"
+                            onchange="handleFullImageSelect(event)">
+                        <button class="btn btn-outline"
+                            style="border:none; background:transparent; color: var(--primary); font-size: 1.2rem; cursor:pointer;"
+                            onclick="document.getElementById('fullImageInput').click()"
+                            title="Upload Prescription Image">
+                            <i class="fa-solid fa-paperclip"></i>
+                        </button>
+                        <input type="text" id="fullChatInput"
+                            placeholder="Ask anything about your health or upload a prescription..."
+                            onkeypress="if(event.key==='Enter') sendFullChatMessage()">
+                        <button class="btn btn-primary" onclick="sendFullChatMessage()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Health Reports -->
+            <section id="reportsTab" class="dashboard-section" style="display: none;">
+                <div class="reports-header">
+                    <h1><i class="fa-solid fa-file-medical"></i> <span data-i18n="reports_tab_title">Health
+                            Reports</span></h1>
+                    <p data-i18n="reports_tab_subtitle">AI-generated wellness reports based on your activity.</p>
+                </div>
+
+                <div class="report-card">
+                    <h3><i class="fa-solid fa-chart-line"></i> <span data-i18n="report_card_title">Weekly Wellness
+                            Summary</span></h3>
+                    <div id="weeklyReport" style="margin-top: 15px; line-height: 1.8;">
+                        <p style="color: var(--text-muted);"><i class="fa-solid fa-circle-info"></i> <span
+                                data-i18n="report_start_msg">Start chatting with
+                                WellBot and using the Symptom Checker to generate personalized reports.</span></p>
+                    </div>
+                </div>
+
+                <button class="btn btn-gradient" onclick="generateReport()" id="reportBtn" style="padding: 14px 30px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp; <span data-i18n="btn_gen_report">Generate AI
+                        Report</span>
+                </button>
+                <div id="aiReportResult" style="margin-top: 20px;"></div>
+            </section>
+
+            <!-- Tab: Report Issue -->
+            <section id="reportIssueTab" class="dashboard-section" style="display: none;">
+                <div class="reports-header" style="background: linear-gradient(135deg, #EF4444, #F97316);">
+                    <h1><i class="fa-solid fa-flag"></i> Report an Issue</h1>
+                    <p>Encountered a problem? Let us know so we can fix it quickly.</p>
+                </div>
+                <div class="glass-card" style="padding: 30px; max-width: 600px;">
+                    <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Submit Issue Report</h3>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight:600; margin-bottom:6px; color:var(--text-muted);">Issue Type</label>
+                        <select id="issueType" style="width:100%; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-light); color:var(--text-dark); font-size:0.95rem; outline:none;">
+                            <option value="">— Select issue type —</option>
+                            <option value="Login Issue">Login Issue</option>
+                            <option value="Registration Issue">Registration Issue</option>
+                            <option value="Chatbot Not Responding">Chatbot Not Responding</option>
+                            <option value="Symptom Checker Error">Symptom Checker Error</option>
+                            <option value="Dashboard Display Error">Dashboard Display Error</option>
+                            <option value="Theme / UI Bug">Theme / UI Bug</option>
+                            <option value="Slow Performance">Slow Performance</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; font-weight:600; margin-bottom:6px; color:var(--text-muted);">Describe the Issue</label>
+                        <textarea id="issueDescription" rows="5" placeholder="Please describe the issue in detail (what happened, steps to reproduce, etc.)"
+                            style="width:100%; padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-light); color:var(--text-dark); font-size:0.95rem; font-family:inherit; resize:vertical; outline:none;"></textarea>
+                    </div>
+                    <button class="btn btn-gradient" onclick="submitIssueReport()" style="width:100%; padding:14px; font-size:1rem;">
+                        <i class="fa-solid fa-paper-plane"></i>&nbsp; Submit Report
+                    </button>
+                    <div id="issueSubmitMsg" style="margin-top:15px;"></div>
+                </div>
+            </section>
+
+            <!-- Tab: Profile Settings -->
+
+            <section id="profileTab" class="dashboard-section" style="display: none;">
+                <h1><i class="fa-solid fa-user-gear"></i> <span data-i18n="profile_title">My Profile</span></h1>
+                <p style="margin-bottom: 30px; color: var(--text-muted);" data-i18n="profile_subtitle">View and manage
+                    your personal account details.
+                </p>
+                <div class="profile-container">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div
+                            style="width: 100px; height: 100px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 15px;">
+                            <i class="fa-solid fa-user" style="color: var(--primary);"></i>
+                        </div>
+                        <h2 id="profileName">User Name</h2>
+                    </div>
+                    <div class="profile-info-row"><span><i class="fa-solid fa-id-badge"></i> <span
+                                data-i18n="prof_name">Full
+                                Name</span></span><span id="pName">Guest</span></div>
+                    <div class="profile-info-row"><span><i class="fa-solid fa-envelope"></i> <span
+                                data-i18n="prof_email">Email
+                                Address</span></span><span id="pEmail">not-logged-in@example.com</span></div>
+                    <div class="profile-info-row"><span><i class="fa-solid fa-user-tag"></i> <span
+                                data-i18n="prof_role">Account
+                                Type</span></span><span
+                            style="background: var(--primary-light); color: var(--primary); padding: 2px 10px; border-radius: 4px; font-size: 0.8rem;"
+                            id="pRole">User</span></div>
+                    <button class="btn"
+                        style="margin-top: 30px; width: 100%; height: 50px; background: linear-gradient(135deg, #EF4444, #F87171); color: white; border: none;"
+                        onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>&nbsp; <span data-i18n="btn_logout_session">Logout
+                            of Session</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Chatbot -->
+    <div class="chat-widget-btn" id="chatToggle" onclick="toggleChat()"><i class="fa-solid fa-robot"></i></div>
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header"
+            style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <span><i class="fa-solid fa-robot"></i> <span data-i18n="bot_panel_title">WellBot Assistant</span></span>
+            <span onclick="toggleChat()" style="cursor: pointer; font-size: 1.2rem;"><i
+                    class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div
+            style="background: var(--bg-light); padding: 8px 15px; display: flex; justify-content: space-around; font-size: 1.5rem; border-bottom: 1px solid var(--border-color);">
+            <span onclick="sendChatMessage('😀 I am feeling happy and energetic!')"
+                style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'"
+                onmouseout="this.style.transform='scale(1)'" title="Happy">😀</span>
+            <span onclick="sendChatMessage('😐 I am feeling neutral right now.')"
+                style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'"
+                onmouseout="this.style.transform='scale(1)'" title="Neutral">😐</span>
+            <span onclick="sendChatMessage('😫 I am feeling stressed and overwhelmed.')"
+                style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'"
+                onmouseout="this.style.transform='scale(1)'" title="Stressed">😫</span>
+            <span onclick="sendChatMessage('😴 I am feeling tired and need rest.')"
+                style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'"
+                onmouseout="this.style.transform='scale(1)'" title="Tired">😴</span>
+            <span onclick="sendChatMessage('🤒 I am feeling sick. What should I do?')"
+                style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'"
+                onmouseout="this.style.transform='scale(1)'" title="Sick">🤒</span>
+        </div>
+        <div class="chat-messages" id="chatBox">
+            <div class="bot-message"
+                style="padding: 12px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div><span data-i18n="welcome_bot_msg">Hello! 👋 How can I help with your health today? You can also use
+                        the</span> <strong><span data-i18n="nav_symptom">Symptom
+                            Checker</span></strong> <span data-i18n="welcome_bot_msg_end">for detailed analysis!</span>
+                </div>
+                <span class="msg-time" id="welcomeTime"></span>
+            </div>
+        </div>
+        <div id="imagePreview"
+            style="display:none; padding:10px; background: var(--bg-light); border-radius:8px; align-items:center; gap:10px;">
+            <img id="previewImg" src="" style="height:40px; border-radius:4px; border:1px solid var(--border-color);">
+            <span onclick="clearImage()"
+                style="cursor:pointer; color:#EF4444; font-size:0.8rem; font-weight:600;">✕</span>
+        </div>
+        <div class="chat-input-area"
+            style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--border-color);">
+            <input type="file" id="imageInput" accept="image/*" style="display:none;"
+                onchange="handleImageSelect(event)">
+            <button onclick="document.getElementById('imageInput').click()"
+                style="background: var(--bg-light); border:1px solid var(--border-color); width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1rem; transition: var(--transition);">
+                <i class="fa-solid fa-image"></i>
+            </button>
+            <button onclick="window.startVoiceChat()" id="voiceBtn"
+                style="background: var(--bg-light); border:1px solid var(--border-color); width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1rem; transition: var(--transition);">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            <input type="text" id="userInput" placeholder="Ask anything..."
+                style="flex:1; padding:10px 15px; border-radius:20px; border:1px solid var(--border-color); outline:none; background: var(--bg-light); color: var(--text-dark);"
+                onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()"
+                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; transition: var(--transition);">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<aiml version="1.0.1" encoding="UTF-8">
+    <category>
+        <pattern>HELLO</pattern>
+        <template>Hello! I am WellBot. I'm here to listen. How are you feeling today?</template>
+    </category>
+
+    <category>
+        <pattern>HI</pattern>
+        <template>Hi there! It's good to see you. How are you doing right now?</template>
+    </category>
+
+    <category>
+        <pattern>I NEED HELP</pattern>
+        <template>I'm concerned. If you are in immediate danger, please call a crisis hotline or 911. You don't have to face this alone.</template>
+    </category>
+
+    <category>
+        <pattern>HELP ME</pattern>
+        <template>I'm concerned. If you are in immediate danger, please call a crisis hotline or 911. You don't have to face this alone.</template>
+    </category>
+
+    <category>
+        <pattern>WHO ARE YOU</pattern>
+        <template>I am WellBot, your personal wellness assistant. I'm here to support you.</template>
+    </category>
+</aiml>
